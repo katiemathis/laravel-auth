@@ -4,6 +4,9 @@
 
     <div class="container">
         <table class="table">
+
+            <a href="{{route('admin.posts.create')}}" class="btn btn-primary mb-3">Create new post</a>
+            
             <thead>
             <tr>
                 <th scope="col">#</th>
@@ -16,7 +19,7 @@
                 @foreach ($posts as $post)
                     <tr>
                         <td>{{$post->id}}</td>
-                        <td>{{$post->title}}</td>
+                        <td><a href="{{route('admin.posts.show', $post->id)}}">{{$post->title}}</a></td>
                         <td>{{substr($post->content, 0, 30)}}</td>
                         <td>{{$post->slug}}</td>
                     </tr>

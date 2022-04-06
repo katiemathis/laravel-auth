@@ -27,7 +27,7 @@ class PostController extends Controller
      */
     public function create()
     {
-        //
+        return view('admin.posts.create');
     }
 
     /**
@@ -38,7 +38,34 @@ class PostController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate(
+            [
+                'title' => 'required|min:1',
+                'content' => 'required|min:5',
+                'slug' => 'nullable'
+                
+                
+            ]
+        );
+
+        $data = $request->all();
+
+        $post = new Post();
+        /*$comic->thumb = $data['thumb'];
+        $comic->title = $data['title'];
+        $comic->description = $data['description'];
+        $comic->price = $data['price'];
+        $comic->series = $data['series'];
+        $comic->sale_date = $data['sale_date'];
+        $comic->type = $data['type'];*/
+
+        $post->fill($data);
+
+        $post->save();
+
+        return redirect()->route('admin.posts.index', ['post' => $post->id])->with('status', 'post added successfully');
+
+
     }
 
     /**
@@ -47,9 +74,9 @@ class PostController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Post $post)
     {
-        //
+        return view('admin.posts.show', compact('post'));
     }
 
     /**
