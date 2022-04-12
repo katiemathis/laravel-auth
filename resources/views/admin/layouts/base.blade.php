@@ -20,7 +20,27 @@
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
 </head>
 <body>
+
     <div id="app">
+        <div class="container">    
+            @if (session('status'))
+                <div class="bg-info">
+                <h3>{{session('status')}}</h3> 
+                </div>
+                
+            @endif
+    
+            @if ($errors->any())
+                <div class="alert alert-danger">
+                    <ul>
+                        @foreach ($errors->all() as $error)
+                            <li>{{$error}}</li>
+                        @endforeach
+                    </ul>
+                </div>
+    
+            @endif
+        </div>
         <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
             <div class="container">
                 <a class="navbar-brand" href="{{ url('/') }}">
@@ -34,7 +54,7 @@
                     <!-- Left Side Of Navbar -->
                     <ul class="navbar-nav mr-auto">
 
-                        <li class="mx-2"><a href="{{route('admin.home')}}">Dashboard</a></li>
+                        <li class="mx-2"><a href="{{route('admin.posts.index')}}">Dashboard</a></li>
                         <li class="mx-2"><a href="{{route('admin.posts.index')}}">Posts</a></li>
 
                     </ul>

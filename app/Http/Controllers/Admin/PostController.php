@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Post;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class PostController extends Controller
 {
@@ -42,22 +43,25 @@ class PostController extends Controller
             [
                 'title' => 'required|min:1',
                 'content' => 'required|min:5',
-                'slug' => 'nullable'
-                
-                
+
             ]
         );
 
         $data = $request->all();
 
+        $slug = Str::slug($data['title']);
+
+        $counter = 1;
+
+        while(Post::where('slug', $slug)->first()){
+            $slug = Str::slug($data['title']) . '-' . $counter;
+            $counter++;
+            
+        }
+
+        $data['slug'] = $slug;
+
         $post = new Post();
-        /*$comic->thumb = $data['thumb'];
-        $comic->title = $data['title'];
-        $comic->description = $data['description'];
-        $comic->price = $data['price'];
-        $comic->series = $data['series'];
-        $comic->sale_date = $data['sale_date'];
-        $comic->type = $data['type'];*/
 
         $post->fill($data);
 
@@ -87,7 +91,13 @@ class PostController extends Controller
      */
     public function edit($id)
     {
-        //
+        $post = Post::find($id);
+
+        if ($post) {
+            return view('admin.posts.edit', compact('post'));
+        } else {
+            abort(404);
+        }
     }
 
     /**
@@ -97,9 +107,39 @@ class PostController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Post $post)
     {
-        //
+        $request->validate(
+            [
+                'title' => 'required|min:1',
+                'content' => 'required|min:5',
+
+            ]
+        );
+
+        $data = $request->all();
+
+        $slug = Str::slug($data['title']);
+
+        if ($post->slug != $slug) {
+            $counter = 1;
+
+            while(Post::where('slug', $slug)->first()){
+                $slug = Str::slug($data['title']) . '-' . $counter;
+                $counter++;
+            }
+            
+        }
+
+        $data['slug'] = $slug;
+
+        $post->fill($data);
+
+        $post->save();
+
+        return redirect()->route('admin.posts.index', ['post' => $post->id])->with('status', 'post added successfully');
+
+
     }
 
     /**
@@ -108,8 +148,11 @@ class PostController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Post $post)
     {
-        //
+        $post->delete();
+
+        return redirect()->route('admin.posts.index');
+
     }
 }
